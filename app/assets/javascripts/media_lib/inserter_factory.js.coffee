@@ -49,11 +49,12 @@ class MediaLib.AudioInserter extends MediaLib.BaseInserter
     $uploader.find('.js-uploader-input').trigger 'change'
 
     $playerContainer = $uploader.find('.js-player-container')
-    $player = $('<div>')
-    $playerContainer.html $player
-    $player.nmdVideoPlayerJw setup:
-      file: @model.static_url
-      height: 30
+    if $playerContainer.length
+      $player = $('<div>')
+      $playerContainer.html $player
+      $player.nmdVideoPlayerJw setup:
+        file: @model.static_url
+        height: 30
 
 # Стратегия вставки видео-модели
 class MediaLib.VideoInserter extends MediaLib.BaseInserter
@@ -61,20 +62,22 @@ class MediaLib.VideoInserter extends MediaLib.BaseInserter
     $uploader.find('.js-uploader-input').val @model.static_name
     $uploader.find('.js-uploader-input').trigger 'change'
 
-    $player = $('<div>')
-    $uploader.find('.js-uploader-video').html $player
-    $player.nmdVideoPlayerJw setup:
-      file: @model.static_url
-      image: @model.player_image
-      aspectratio: '16:9'
-      events:
-        onError: ->
-          if @model.player_video_fallback
-            $player.nmdVideoPlayerJw setup:
-              aspectratio: '16:9'
-              file: model.player_video_fallback
-              image: model.player_image
-              autostart: true
+    $uploaderVideo = $uploader.find('.js-uploader-video')
+    if $uploaderVideo.length
+      $player = $('<div>')
+      $uploaderVideo.html $player
+      $player.nmdVideoPlayerJw setup:
+        file: @model.static_url
+        image: @model.player_image
+        aspectratio: '16:9'
+        events:
+          onError: ->
+            if @model.player_video_fallback
+              $player.nmdVideoPlayerJw setup:
+                aspectratio: '16:9'
+                file: model.player_video_fallback
+                image: model.player_image
+                autostart: true
 
 # Стратегия вставки одного изображения
 class MediaLib.SingleImageInserter extends MediaLib.BaseInserter
