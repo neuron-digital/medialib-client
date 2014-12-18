@@ -16,7 +16,7 @@ $(window).on "message", (e) ->
           uploader: uploader
 
         # Закрытие модального окна при интеграции с модалками
-        $('#nmdUploaderModal').modal('hide') if $.fn.modal? and not uploader.multiselect
+        $('div[id^="nmdUploaderModal"]').modal('hide') if $.fn.modal? and not uploader.multiselect
 
 $ ->
   methods =
