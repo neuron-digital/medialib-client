@@ -24,7 +24,7 @@ class MediaLib.InserterFactory
       when 'tinymce'
         switch @uploader.site
           when 'rusnovosti.ru'
-            new MediaLib.RusnovostiTinyMCE3Inserter @uploader, @model          
+            new MediaLib.RusnovostiTinyMCE3Inserter @uploader, @model
           else
             new MediaLib.TinyMCE3Inserter @uploader, @model
       when 'same_image'
@@ -59,6 +59,7 @@ class MediaLib.AudioInserter extends MediaLib.BaseInserter
 # Стратегия вставки видео-модели
 class MediaLib.VideoInserter extends MediaLib.BaseInserter
   insert: ($uploader) ->
+    $uploader.find('.js-uploader-duration').val @model.duration
     $uploader.find('.js-uploader-input').val @model.static_name
     $uploader.find('.js-uploader-input').trigger 'change'
 
