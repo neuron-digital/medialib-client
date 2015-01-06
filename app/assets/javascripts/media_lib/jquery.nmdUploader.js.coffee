@@ -60,14 +60,23 @@ $ ->
 
         openUploader() if settings.open
 
+        # Вешаем открытие окна с загрузчиком на кнопку с классом js-uploader-open
         $uploader.find('.js-uploader-open').on 'click', (e) ->
           e.preventDefault()
           e.stopPropagation()
           openUploader()
 
-        $uploader.find('.js-uploader-iframe').html "
-          <iframe width='100%' height='500' src='#{getUrl()}' frameborder='0'></iframe>
-        "
+        # Инициализируем iframe с загрузчиком
+        iframeTemplate = _.template '''
+          <iframe width='<%= width %>' height='<%= height %>' src='<%= src %>' frameborder='0'></iframe>
+        '''
+        $uploader.find('.js-uploader-iframe').each ->
+          $iframe = $ @
+          iframeData = $iframe.data()
+          $iframe.html iframeTemplate
+            src: getUrl()
+            width: iframeData.width or '100%'
+            height: iframeData.height or 500
 
     select: (options) ->
       settings = _.extend {}, options
