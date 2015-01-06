@@ -56,8 +56,8 @@ $ ->
           ".replace /\ /g, ''
 
         openUploader = ->
-          $uploaderIframes = $uploader.find('iframe.js-uploader-iframe')
-          $uploaderIframes.add $("##{settings.open}").find('iframe.js-uploader-iframe') if settings.open
+          $uploaderIframes = $uploader.find('.js-uploader-iframe')
+          $uploaderIframes.add $("##{settings.open}").find('.js-uploader-iframe') if settings.open
           if $uploaderIframes.length
             iframeTemplate = _.template '''
               <iframe width='<%= width %>' height='<%= height %>' src='<%= src %>' frameborder='0'></iframe>
