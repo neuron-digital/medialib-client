@@ -66,14 +66,13 @@ $ ->
               <iframe width='<%= width %>' height='<%= height %>' src='<%= src %>' frameborder='0'></iframe>
             '''
 
-            $uploader.find('.js-uploader-open').on 'click', ->
-              $uploaderIframes.each ->
-                $iframe = $ @
-                iframeData = $iframe.data()
-                $iframe.html iframeTemplate
-                  src: getUrl()
-                  width: iframeData.width or '100%'
-                  height: iframeData.height or 500
+            $uploaderIframes.each ->
+              $iframe = $ @
+              iframeData = $iframe.data()
+              $iframe.html iframeTemplate
+                src: getUrl()
+                width: iframeData.width or '100%'
+                height: iframeData.height or 500
           else
             popupWindow = open getUrl(), 'NMD Media Lib', 'scrollbars=1, width=800, height=500'
             popupWindow.focus()
