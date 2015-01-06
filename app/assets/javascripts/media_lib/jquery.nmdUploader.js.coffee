@@ -35,9 +35,6 @@ $ ->
         $uploader = $(@)
         uploader = $uploader.data()
 
-        prefix = uploader.prefix
-        throw "prefix isn't defined" unless prefix?
-
         multiselect = settings.multiselect or uploader.multiselect
 
         uploaderId = $.md5(Math.random())[0..3]
@@ -45,6 +42,10 @@ $ ->
         else $uploader.attr 'id', uploaderId
 
         getUrl = ->
+          # "Живой" префикс
+          prefix = $uploader.data('prefix')
+          throw "prefix isn't defined" unless prefix?
+
           url = "
             #{settings.host}/#
             v2/
@@ -55,36 +56,35 @@ $ ->
           ".replace /\ /g, ''
 
         openUploader = ->
-          popupWindow = open getUrl(), 'NMD Media Lib', 'scrollbars=1, width=800, height=500'
-          popupWindow.focus()
+          $uploaderIframes = $uploader.find('.js-uploader-iframe')
+          if $uploaderIframes.length
+            iframeTemplate = _.template '''
+              <iframe width='<%= width %>' height='<%= height %>' src='<%= src %>' frameborder='0'></iframe>
+            '''
 
-        openUploader() if settings.open
+            $uploader.find('.js-uploader-open').on 'click', ->
+              $uploaderIframes.each ->
+                $iframe = $ @
+                iframeData = $iframe.data()
+                $iframe.html iframeTemplate
+                  src: getUrl()
+                  width: iframeData.width or '100%'
+                  height: iframeData.height or 500
 
-        # Вешаем открытие окна с загрузчиком на кнопку с классом js-uploader-open
-        $uploader.find('.js-uploader-open').on 'click', (e) ->
-          e.preventDefault()
-          e.stopPropagation()
-          openUploader()
-
-        # Инициализируем iframe с загрузчиком
-        $uploaderIframe = $uploader.find('.js-uploader-iframe')
-        if $uploaderIframe.length
-          iframeTemplate = _.template '''
-            <iframe width='<%= width %>' height='<%= height %>' src='<%= src %>' frameborder='0'></iframe>
-          '''
-          initIframes = ($iframes) ->
-            $iframes.each ->
-              $iframe = $ @
-              iframeData = $iframe.data()
-              $iframe.html iframeTemplate
-                src: getUrl()
-                width: iframeData.width or '100%'
-                height: iframeData.height or 500
-          $uploaderIframeOpen = $uploader.find('.js-uploader-iframe-open')
-          if $uploaderIframeOpen.length
-            $uploaderIframeOpen.on 'click', -> initIframes($uploaderIframe)
+            # Для TinyMCE id модального окна передаётся в параметре
+            if settings.open
+              $("##{settings.open}").modal('show') if $.fn.modal?
           else
-            initIframes($uploaderIframe)
+            popupWindow = open getUrl(), 'NMD Media Lib', 'scrollbars=1, width=800, height=500'
+            popupWindow.focus()
+
+        if settings.open
+          openUploader() 
+        else
+          $uploader.find('.js-uploader-open').on 'click', (e) ->
+            e.preventDefault()
+            e.stopPropagation()
+            openUploader()
 
     select: (options) ->
       settings = _.extend {}, options
