@@ -56,7 +56,8 @@ $ ->
           ".replace /\ /g, ''
 
         openUploader = ->
-          $uploaderIframes = $uploader.find('.js-uploader-iframe')
+          $uploaderIframes = $uploader.find('iframe.js-uploader-iframe')
+          $uploaderIframes.add $("##{settings.open}").find('iframe.js-uploader-iframe') if settings.open
           if $uploaderIframes.length
             iframeTemplate = _.template '''
               <iframe width='<%= width %>' height='<%= height %>' src='<%= src %>' frameborder='0'></iframe>
@@ -72,8 +73,7 @@ $ ->
                   height: iframeData.height or 500
 
             # Для TinyMCE id модального окна передаётся в параметре
-            if settings.open
-              $("##{settings.open}").modal('show') if $.fn.modal?
+            $("##{settings.open}").modal('show') if settings.open and $.fn.modal?
           else
             popupWindow = open getUrl(), 'NMD Media Lib', 'scrollbars=1, width=800, height=500'
             popupWindow.focus()
