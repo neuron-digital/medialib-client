@@ -69,18 +69,22 @@ $ ->
         # Инициализируем iframe с загрузчиком
         $uploaderIframe = $uploader.find('.js-uploader-iframe')
         if $uploaderIframe.length
-          $uploaderIframeOpen = $uploader.find('.js-uploader-iframe-open')
           iframeTemplate = _.template '''
             <iframe width='<%= width %>' height='<%= height %>' src='<%= src %>' frameborder='0'></iframe>
           '''
-          $uploaderIframeOpen.on 'click', ->
-            $uploaderIframe.each ->
+          initIframes = ($iframes) ->
+            $iframes.each ->
               $iframe = $ @
               iframeData = $iframe.data()
               $iframe.html iframeTemplate
                 src: getUrl()
                 width: iframeData.width or '100%'
                 height: iframeData.height or 500
+          $uploaderIframeOpen = $uploader.find('.js-uploader-iframe-open')
+          if $uploaderIframeOpen.length
+            $uploaderIframeOpen.on 'click', -> initIframes($uploaderIframe)
+          else
+            initIframes($uploaderIframe)
 
     select: (options) ->
       settings = _.extend {}, options
