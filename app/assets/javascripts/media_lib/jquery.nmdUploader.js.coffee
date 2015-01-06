@@ -57,9 +57,9 @@ $ ->
 
         openUploader = ->
           if settings.open
-            $uploaderIframes = $("##{settings.open}").find('.js-uploader-iframe')
+            $uploaderIframes = $("##{settings.open}").find('.js-uploader-iframe:first')
           else
-            $uploaderIframes = $uploader.find('.js-uploader-iframe')
+            $uploaderIframes = $uploader.find('.js-uploader-iframe:first')
           
           if $uploaderIframes.length
             iframeTemplate = _.template '''
@@ -73,14 +73,14 @@ $ ->
                 src: getUrl()
                 width: iframeData.width or '100%'
                 height: iframeData.height or 500
+
+            $uploaderIframes.closest('div.modal').modal('show') if $.fn.modal?
           else
             popupWindow = open getUrl(), 'NMD Media Lib', 'scrollbars=1, width=800, height=500'
             popupWindow.focus()
 
         if settings.open
           openUploader()
-          # Для TinyMCE id модального окна передаётся в параметре
-          $("##{settings.open}").modal('show') if $.fn.modal?
         else
           $uploader.find('.js-uploader-open').on 'click', (e) ->
             e.preventDefault()
