@@ -22,20 +22,16 @@ $ ->
   methods =
     init: (options) ->
       settings = _.extend
-        host: null
-        tenant: null
         open: false
         multiselect: false
       , options
 
-      throw "host isn't defined" unless settings.host?
-      throw "tenant isn't defined" unless settings.tenant?
+      throw "host isn't defined" unless settings.host
+      throw "tenant isn't defined" unless settings.tenant
 
       @each ->
         $uploader = $(@)
         uploader = $uploader.data()
-
-        multiselect = settings.multiselect or uploader.multiselect
 
         uploaderId = $.md5(Math.random())[0..3]
         if $uploader.attr 'id' then uploaderId = $uploader.attr 'id'
@@ -43,16 +39,18 @@ $ ->
 
         getUrl = ->
           # "Живой" префикс
-          prefix = $uploader.data('prefix')
+          prefix = settings.prefix or $uploader.data('prefix')
           throw "prefix isn't defined" unless prefix?
 
-          url = "
-            #{settings.host}/#
-            v2/
-            #{settings.tenant}/
-            #{if multiselect then 'multiselect/' else ''}
-            #{uploaderId}/
-            #{prefix}
+          multiselect = settings.multiselect or $uploader.data('multiselect')
+          type = settings.type or $uploader.data('type')
+
+          "#{settings.host}/#
+            tenant/#{settings.tenant}/
+            #{if uploaderId then "uid/#{uploaderId}/" else ''}
+            #{if multiselect then 's/multiselect/' else ''}
+            #{if type then "t/#{type}/" else ''}
+            prefix/#{prefix}
           ".replace /\ /g, ''
 
         openUploader = ->
