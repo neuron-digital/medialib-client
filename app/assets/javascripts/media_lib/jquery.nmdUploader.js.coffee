@@ -21,16 +21,15 @@ $(window).on "message", (e) ->
 $ ->
   methods =
     init: (options) ->
-      settings = _.extend
-        open: false
-        multiselect: false
+      settings = $.extend true,
+        {}
       , options
 
       throw "host isn't defined" unless settings.host
       throw "tenant isn't defined" unless settings.tenant
 
       @each ->
-        $uploader = $(@)
+        $uploader = $ @
         uploader = $uploader.data()
 
         uploaderId = $.md5(Math.random())[0..3]
@@ -39,11 +38,11 @@ $ ->
 
         getUrl = ->
           # "Живой" префикс
-          prefix = settings.prefix or $uploader.data('prefix')
-          throw "prefix isn't defined" unless prefix?
+          prefix = settings.prefix ? $uploader.data('prefix')
+          throw "prefix isn't defined" unless prefix
 
-          multiselect = settings.multiselect or $uploader.data('multiselect')
-          type = settings.type or $uploader.data('type')
+          multiselect = settings.multiselect ? $uploader.data('multiselect')
+          type = settings.type ? $uploader.data('type')
 
           "#{settings.host}/#
             tenant/#{settings.tenant}/
@@ -53,31 +52,37 @@ $ ->
             prefix/#{prefix}
           ".replace /\ /g, ''
 
-        openUploader = ->
-          if settings.open
-            $uploaderIframes = $("##{settings.open}").find('.js-uploader-iframe:first')
+        getIframe = ->
+          modalId = settings.modalId ? $uploader.data('modalId')
+          if modalId
+            $uploaderIframe = $("##{modalId}").find('.js-uploader-iframe')
           else
-            $uploaderIframes = $uploader.find('.js-uploader-iframe:first')
-          
-          if $uploaderIframes.length
+            $uploaderIframe = $uploader.find('.js-uploader-iframe')
+          $uploaderIframe.first()
+
+        initIframe = ->
+          $iframe = getIframe()
+          if $iframe.length
             iframeTemplate = _.template '''
               <iframe width='<%= width %>' height='<%= height %>' src='<%= src %>' frameborder='0'></iframe>
             '''
 
-            $uploaderIframes.each ->
-              $iframe = $ @
-              iframeData = $iframe.data()
-              $iframe.html iframeTemplate
-                src: getUrl()
-                width: iframeData.width or '100%'
-                height: iframeData.height or 500
+            $iframe.html iframeTemplate $.extend
+              src: getUrl()
+              width: '100%'
+              height: 500
+            , $iframe.data()
 
-            $uploaderIframes.closest('div.modal').modal('show') if $.fn.modal?
+        openUploader = ->
+          $iframe = getIframe()
+          if $iframe.length
+            $iframe.closest('div.modal').modal('show') if $.fn.modal?
+            initIframe()
           else
             popupWindow = open getUrl(), 'NMD Media Lib', 'scrollbars=1, width=800, height=500'
             popupWindow.focus()
 
-        if settings.open
+        if settings.open ? $uploader.data('open')
           openUploader()
         else
           $uploader.find('.js-uploader-open').on 'click', (e) ->
