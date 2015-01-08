@@ -22,7 +22,8 @@ $ ->
   methods =
     init: (options) ->
       settings = $.extend true,
-        {}
+        iframeSelector: '.js-uploader-iframe'
+        openSelector: '.js-uploader-open'
       , options
 
       throw "host isn't defined" unless settings.host
@@ -55,9 +56,9 @@ $ ->
         getIframe = ->
           modalId = settings.modalId ? $uploader.data('modalId')
           if modalId
-            $uploaderIframe = $("##{modalId}").find('.js-uploader-iframe')
+            $uploaderIframe = $("##{modalId}").find(settings.iframeSelector)
           else
-            $uploaderIframe = $uploader.find('.js-uploader-iframe')
+            $uploaderIframe = $uploader.find(settings.iframeSelector)
           $uploaderIframe.first()
 
         initIframe = ->
@@ -85,7 +86,7 @@ $ ->
         if settings.open ? $uploader.data('open')
           openUploader()
         else
-          $uploader.find('.js-uploader-open').on 'click', (e) ->
+          $uploader.find(settings.openSelector).on 'click', (e) ->
             e.preventDefault()
             e.stopPropagation()
             openUploader()
