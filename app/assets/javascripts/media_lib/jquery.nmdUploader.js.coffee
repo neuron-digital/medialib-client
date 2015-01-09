@@ -31,11 +31,9 @@ $ ->
 
       @each ->
         $uploader = $ @
-        uploader = $uploader.data()
 
-        uploaderId = $.md5(Math.random())[0..3]
-        if $uploader.attr 'id' then uploaderId = $uploader.attr 'id'
-        else $uploader.attr 'id', uploaderId
+        $uploader.attr('id', $.md5(Math.random())[0..3]) unless $uploader.attr('id')
+        uploaderId = $uploader.attr('id')
 
         getUrl = ->
           # "Живой" префикс
