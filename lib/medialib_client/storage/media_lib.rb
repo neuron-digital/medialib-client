@@ -28,12 +28,11 @@ module Paperclip
             post_body << data
             post_body << "\r\n--#{boundary}--\r\n"
 
-            http = Net::HTTP.new(uri.host, uri.port)
             request = Net::HTTP::Post.new(uri.request_uri + "?sign=#{sign}&prefix=#{prefix}")
             request.body = post_body.join
             request["Content-Type"] = "multipart/form-data, boundary=#{boundary}"
 
-            http.request(request)
+            send_request(uri, request)
           rescue
             raise
           ensure
@@ -62,6 +61,7 @@ module Paperclip
       end
 
       private
+
         def delete path
           if path.split('/').first == 'gallery_files'
             true
@@ -69,23 +69,35 @@ module Paperclip
             sign = Digest::MD5.hexdigest(g_path + @options[:secret_key])
             log("deleting #{path}")
             uri = URI.parse(@options[:request_url] + '/' + path)
-            http = Net::HTTP.new(uri.host, uri.port)
             request = Net::HTTP::Delete.new(uri.request_uri + "?sign=#{sign}")
-            http.request(request)
+
+            send_request(uri, request)
 
             g_path = path.gsub('galleries', 'gallery_files')
             log("deleting #{g_path}")
             uri = URI.parse(@options[:request_url] + '/' + g_path)
-            http = Net::HTTP.new(uri.host, uri.port)
             request = Net::HTTP::Delete.new(uri.request_uri + "?sign=#{sign}")
-            http.request(request)
+
+            send_request(uri, request)
           else
             sign = Digest::MD5.hexdigest(path + @options[:secret_key])
             log("deleting #{path}")
             uri = URI.parse(@options[:request_url] + '/' + path)
-            http = Net::HTTP.new(uri.host, uri.port)
             request = Net::HTTP::Delete.new(uri.request_uri + "?sign=#{sign}")
 
+            send_request(uri, request)
+          end
+        end
+
+        def send_request(uri, request)
+          http = Net::HTTP.new(uri.host, uri.port)
+          http.use_ssl = true if uri.scheme == 'https'
+          response = http.request(request)
+
+          if response && response.code =~ /30\d/ && response.to_hash['location']
+            uri = URI.parse(response.to_hash['location'][0])
+            http = Net::HTTP.new(uri.host, uri.port)
+            http.use_ssl = true if uri.scheme == 'https'
             http.request(request)
           end
         end

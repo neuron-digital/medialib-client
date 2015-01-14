@@ -1,3 +1,3 @@
 module MedialibClient
-  VERSION = '1.3.0' unless defined? MedialibClient::VERSION
+  VERSION = '1.3.1' unless defined? MedialibClient::VERSION
 end
