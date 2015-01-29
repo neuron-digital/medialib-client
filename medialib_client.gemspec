@@ -19,6 +19,4 @@ Gem::Specification.new do |s|
   s.add_dependency('rails', '>= 3.2')
   s.add_dependency('coffee-rails')
   s.add_dependency('jquery-rails')
-  s.add_dependency('rails-backbone')
-  s.add_dependency('underscore-rails')
 end
