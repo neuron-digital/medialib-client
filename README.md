@@ -6,7 +6,6 @@ Gem for integration MediaLib in ruby-application
 Install Gem
 ```ruby
 gem 'medialib_client', github: 'Go-Promo/medialib-client'
-gem 'rails-backbone', github: 'codebrew/backbone-rails'
 ```
 
 Require jQuery-plugin in your assets
