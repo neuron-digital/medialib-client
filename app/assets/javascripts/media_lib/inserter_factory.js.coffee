@@ -21,6 +21,8 @@ class MediaLib.InserterFactory
               new MediaLib.HeatMultiImageInserter @uploader, @model
             when 'lifenews.ru'
               new MediaLib.LifenewsMultiImageInserter @uploader, @model
+            when 'izvestia.ru'
+              new MediaLib.IzvestiaMultiImageInserter @uploader, @model
       when 'tinymce'
         switch @uploader.site
           when 'rusnovosti.ru'
@@ -110,7 +112,7 @@ class MediaLib.SameImageInserter extends MediaLib.BaseInserter
         style: style
 
 # Стратегия вставки одного стиля разных изображений
-class MediaLib.MultiImageInserter extends MediaLib.BaseInserter
+class @MediaLib.MultiImageInserter extends MediaLib.BaseInserter
   insertByTemplate: ($uploader, imageTemplate) ->
     $imageField = $uploader.find('.js-uploader-multi-image')
     number = $imageField.find('li').length
