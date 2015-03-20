@@ -2,39 +2,42 @@ window.MediaLib ||= {}
 
 # Абстрактная фабрика для создания стратегий вставки
 class MediaLib.InserterFactory
-  constructor: (@uploader, @model) ->
+  constructor: (@settings) ->
   createInserter: ->
-    switch @uploader.type
+    uploader = @settings.uploader
+    model = @settings.model
+    switch uploader.type
       when 'audio'
-        if @model.type is 'audio'
-          new MediaLib.AudioInserter @uploader, @model
+        if model.type is 'audio'
+          new MediaLib.AudioInserter uploader, model
       when 'image'
-        if @model.type is 'image'
-          new MediaLib.SingleImageInserter @uploader, @model
+        if model.type is 'image'
+          new MediaLib.SingleImageInserter uploader, model
       when 'video'
-        if @model.type is 'video'
-          new MediaLib.VideoInserter @uploader, @model
+        if model.type is 'video'
+          # new MediaLib.VideoInserter uploader, model
+          new MediaLib.IFrameVideoInserter @settings.host, uploader, model
       when 'multi_image'
-        if @model.type is 'image'
-          switch @uploader.site
+        if model.type is 'image'
+          switch uploader.site
             when 'heat.ru'
-              new MediaLib.HeatMultiImageInserter @uploader, @model
+              new MediaLib.HeatMultiImageInserter uploader, model
             when 'lifenews.ru'
-              new MediaLib.LifenewsMultiImageInserter @uploader, @model
+              new MediaLib.LifenewsMultiImageInserter uploader, model
             when 'izvestia.ru'
-              new MediaLib.IzvestiaMultiImageInserter @uploader, @model
+              new MediaLib.IzvestiaMultiImageInserter uploader, model
       when 'tinymce'
-        switch @uploader.site
+        switch uploader.site
           when 'rusnovosti.ru'
-            new MediaLib.RusnovostiTinyMCE3Inserter @uploader, @model
+            new MediaLib.RusnovostiTinyMCE3Inserter uploader, model
           else
-            new MediaLib.TinyMCE3Inserter @uploader, @model
+            new MediaLib.TinyMCE3Inserter uploader, model
       when 'same_image'
-        if @model.type is 'image'
-          new MediaLib.SameImageInserter @uploader, @model
+        if model.type is 'image'
+          new MediaLib.SameImageInserter uploader, model
       when 'gallery_image'
-        if @model.type is 'image'
-          new MediaLib.HeatGalleryImageInserter @uploader, @model
+        if model.type is 'image'
+          new MediaLib.HeatGalleryImageInserter uploader, model
       else
         throw "Undefined Inserter"
 
@@ -57,6 +60,19 @@ class MediaLib.AudioInserter extends MediaLib.BaseInserter
       $player.nmdVideoPlayerJw setup:
         file: @model.static_url
         height: 30
+
+# Стратегия вставки видео-модели через iframe
+class MediaLib.IFrameVideoInserter extends MediaLib.BaseInserter
+  constructor: (@host, @uploader, @model) ->
+  insert: ($uploader) ->
+    $uploader.find('.js-uploader-duration').val @model.duration
+    $uploader.find('.js-uploader-input').val @model.static_name
+    $uploader.find('.js-uploader-input').trigger 'change'
+
+    $uploaderVideo = $uploader.find('.js-uploader-video')
+    if $uploaderVideo.length
+      $player = $("<iframe src='#{@host}/embed/#{@model.embeded}'></iframe>")
+      $uploaderVideo.html $player
 
 # Стратегия вставки видео-модели
 class MediaLib.VideoInserter extends MediaLib.BaseInserter
@@ -201,12 +217,13 @@ class MediaLib.TinyMCE3Inserter extends MediaLib.BaseInserter
           src: src
           description: @model.description
       when 'video'
-        template = _.template '
-          <video controls poster="<%= poster %>" src="<%= src %>" alt="<%= description %>"></video>'
+        template = _.template '<iframe src="http://localhost:5005/embed/<%= hash %>"></iframe>' # '<video controls poster="<%= poster %>" src="<%= src %>" alt="<%= description %>"></video>'
+        # content = template
+        #   poster: @model.player_image
+        #   src: @model.static_url
+        #   description: @model.description
         content = template
-          poster: @model.player_image
-          src: @model.static_url
-          description: @model.description
+          hash: @model.hash
       when 'audio'
         template = _.template '
           <audio class="audioPlayer" controls>
@@ -231,11 +248,13 @@ class MediaLib.RusnovostiTinyMCE3Inserter extends MediaLib.BaseInserter
           src: src
           description: @model.description
       when 'video'
-        template = _.template '<div class="jw-video js-jw-video" data-image="<%= image %>" data-file="<%= file %>" data-description="<%= description %>">Video loading...</div>'
+        template = _.template '<iframe src="http://localhost:5005/embed/<%= hash %>"></iframe>' # '<div class="jw-video js-jw-video" data-image="<%= image %>" data-file="<%= file %>" data-description="<%= description %>">Video loading...</div>'
+        # content = template
+        #   image: @model.player_image
+        #   file: @model.static_url
+        #   description: @model.description
         content = template
-          image: @model.player_image
-          file: @model.static_url
-          description: @model.description
+          hash: @model.hash
       when 'audio'
         template = _.template '<div class="jw-audio js-jw-audio" data-file="<%= file %>" data-description="<%= description %>">Audio loading...</div>'
         content = template

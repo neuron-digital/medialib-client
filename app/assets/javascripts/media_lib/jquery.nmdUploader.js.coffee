@@ -91,7 +91,7 @@ $ ->
 
     select: (options) ->
       settings = _.extend {}, options
-      factory = new MediaLib.InserterFactory settings.uploader, settings.model
+      factory = new MediaLib.InserterFactory settings
       inserter = factory.createInserter()
       @each -> inserter.insert $(@) if inserter?
 
