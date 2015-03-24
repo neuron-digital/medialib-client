@@ -71,7 +71,7 @@ class MediaLib.IFrameVideoInserter extends MediaLib.BaseInserter
 
     $uploaderVideo = $uploader.find('.js-uploader-video')
     if $uploaderVideo.length
-      $player = $("<iframe src='#{@host}/embed/#{@model.embeded}'></iframe>")
+      $player = $("<iframe src='#{@host}/embed/#{@model.name}'></iframe>")
       $uploaderVideo.html $player
 
 # Стратегия вставки видео-модели
@@ -218,14 +218,10 @@ class MediaLib.TinyMCE3Inserter extends MediaLib.BaseInserter
           src: src
           description: @model.description
       when 'video'
-        template = _.template '<iframe src="<%= host %>/embed/<%= hash %>"></iframe>' # '<video controls poster="<%= poster %>" src="<%= src %>" alt="<%= description %>"></video>'
-        # content = template
-        #   poster: @model.player_image
-        #   src: @model.static_url
-        #   description: @model.description
+        template = _.template '<iframe src="<%= host %>/embed/<%= hash %>"></iframe>'
         content = template
           host: @host
-          hash: @model.hash
+          hash: @model.name
       when 'audio'
         template = _.template '
           <audio class="audioPlayer" controls>
@@ -251,14 +247,10 @@ class MediaLib.RusnovostiTinyMCE3Inserter extends MediaLib.BaseInserter
           src: src
           description: @model.description
       when 'video'
-        template = _.template '<iframe src="<%= host %>/embed/<%= hash %>"></iframe>' # '<div class="jw-video js-jw-video" data-image="<%= image %>" data-file="<%= file %>" data-description="<%= description %>">Video loading...</div>'
-        # content = template
-        #   image: @model.player_image
-        #   file: @model.static_url
-        #   description: @model.description
+        template = _.template '<iframe src="<%= host %>/embed/<%= hash %>"></iframe>'
         content = template
           host: @host
-          hash: @model.hash
+          hash: @model.name
       when 'audio'
         template = _.template '<div class="jw-audio js-jw-audio" data-file="<%= file %>" data-description="<%= description %>">Audio loading...</div>'
         content = template
