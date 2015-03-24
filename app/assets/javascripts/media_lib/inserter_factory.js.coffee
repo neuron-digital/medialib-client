@@ -71,7 +71,7 @@ class MediaLib.IFrameVideoInserter extends MediaLib.BaseInserter
 
     $uploaderVideo = $uploader.find('.js-uploader-video')
     if $uploaderVideo.length
-      $player = $("<iframe src='#{@host}/embed/#{@model.name}'></iframe>")
+      $player = $("<iframe src='#{@host}/embed/#{@model.hash}'></iframe>")
       $uploaderVideo.html $player
 
 # Стратегия вставки видео-модели
@@ -221,7 +221,7 @@ class MediaLib.TinyMCE3Inserter extends MediaLib.BaseInserter
         template = _.template '<iframe src="<%= host %>/embed/<%= hash %>"></iframe>'
         content = template
           host: @host
-          hash: @model.name
+          hash: @model.hash
       when 'audio'
         template = _.template '
           <audio class="audioPlayer" controls>
@@ -250,7 +250,7 @@ class MediaLib.RusnovostiTinyMCE3Inserter extends MediaLib.BaseInserter
         template = _.template '<iframe src="<%= host %>/embed/<%= hash %>"></iframe>'
         content = template
           host: @host
-          hash: @model.name
+          hash: @model.hash
       when 'audio'
         template = _.template '<div class="jw-audio js-jw-audio" data-file="<%= file %>" data-description="<%= description %>">Audio loading...</div>'
         content = template
