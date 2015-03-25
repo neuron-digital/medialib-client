@@ -71,7 +71,7 @@ class MediaLib.IFrameVideoInserter extends MediaLib.BaseInserter
 
     $uploaderVideo = $uploader.find('.js-uploader-video')
     if $uploaderVideo.length
-      $player = $("<iframe src='#{@host}/embed/#{@model.hash}'></iframe>")
+      $player = $("<iframe src='#{@host}/embed/#{@model.hash}' class='uploader-embed'></iframe>")
       $uploaderVideo.html $player
 
 # Стратегия вставки видео-модели
