@@ -15,7 +15,6 @@ class MediaLib.InserterFactory
           new MediaLib.SingleImageInserter uploader, model
       when 'video'
         if model.type is 'video'
-          # new MediaLib.VideoInserter uploader, model
           new MediaLib.IFrameVideoInserter @settings.host, uploader, model
       when 'multi_image'
         if model.type is 'image'
@@ -220,7 +219,9 @@ class MediaLib.TinyMCE3Inserter extends MediaLib.BaseInserter
           src: src
           description: @model.description
       when 'video'
-        template = _.template '<iframe src="<%= host %>/embed/<%= hash %>"></iframe>'
+        throw "host isn't defined" unless @host
+
+        template = _.template '<iframe src="http://<%= host %>/embed/<%= hash %>"></iframe>'
         content = template
           host: @host
           hash: @model.hash
@@ -249,7 +250,9 @@ class MediaLib.RusnovostiTinyMCE3Inserter extends MediaLib.BaseInserter
           src: src
           description: @model.description
       when 'video'
-        template = _.template '<iframe src="<%= host %>/embed/<%= hash %>"></iframe>'
+        throw "host isn't defined" unless @host
+
+        template = _.template '<iframe src="http://<%= host %>/embed/<%= hash %>"></iframe>'
         content = template
           host: @host
           hash: @model.hash
