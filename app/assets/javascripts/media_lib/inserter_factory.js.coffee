@@ -65,13 +65,15 @@ class MediaLib.AudioInserter extends MediaLib.BaseInserter
 class MediaLib.IFrameVideoInserter extends MediaLib.BaseInserter
   constructor: (@host, @uploader, @model) ->
   insert: ($uploader) ->
+    throw "host isn't defined" unless @host
+
     $uploader.find('.js-uploader-duration').val @model.duration
     $uploader.find('.js-uploader-input').val @model.static_name
     $uploader.find('.js-uploader-input').trigger 'change'
 
     $uploaderVideo = $uploader.find('.js-uploader-video')
     if $uploaderVideo.length
-      $player = $("<iframe src='#{@host}/embed/#{@model.hash}' class='uploader-embed'></iframe>")
+      $player = $("<iframe src='http://#{@host}/embed/#{@model.hash}' class='uploader-embed'></iframe>")
       $uploaderVideo.html $player
 
 # Стратегия вставки видео-модели
