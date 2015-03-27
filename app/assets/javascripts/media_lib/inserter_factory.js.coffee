@@ -72,7 +72,7 @@ class MediaLib.IFrameVideoInserter extends MediaLib.BaseInserter
 
     $uploaderVideo = $uploader.find('.js-uploader-video')
     if $uploaderVideo.length
-      $player = $("<iframe src='http://#{@host}/embed/#{@model.hash}' class='uploader-embed'></iframe>")
+      $player = $("<iframe src='http://#{@host}/embed/#{@model.hash}' class='uploader-embed' frameborder='0' allowfullscreen></iframe>")
       $uploaderVideo.html $player
 
 # Стратегия вставки видео-модели
@@ -221,7 +221,7 @@ class MediaLib.TinyMCE3Inserter extends MediaLib.BaseInserter
       when 'video'
         throw "host isn't defined" unless @host
 
-        template = _.template '<iframe src="http://<%= host %>/embed/<%= hash %>"></iframe>'
+        template = _.template '<iframe src="http://<%= host %>/embed/<%= hash %>" class="uploader-embed" frameborder="0" allowfullscreen></iframe>'
         content = template
           host: @host
           hash: @model.hash
