@@ -14,6 +14,7 @@ $(window).on "message", (e) ->
         $uploader.nmdUploader 'select',
           model: data.model
           uploader: uploader
+          host: data.host
 
         # Закрытие модального окна при интеграции с модалками
         $('div[id^="nmdUploaderModal"]').modal('hide') if $.fn.modal? and not uploader.multiselect
@@ -91,7 +92,7 @@ $ ->
 
     select: (options) ->
       settings = _.extend {}, options
-      factory = new MediaLib.InserterFactory settings.uploader, settings.model
+      factory = new MediaLib.InserterFactory settings
       inserter = factory.createInserter()
       @each -> inserter.insert $(@) if inserter?
 
