@@ -15,7 +15,11 @@ class MediaLib.InserterFactory
           new MediaLib.SingleImageInserter uploader, model
       when 'video'
         if model.type is 'video'
-          new MediaLib.IFrameVideoInserter @settings.host, uploader, model
+          switch uploader.site
+            when 'lifenews.ru'
+              new MediaLib.IFrameVideoInserter @settings.host, uploader, model
+            else
+              new MediaLib.VideoInserter @settings.host, uploader, model
       when 'multi_image'
         if model.type is 'image'
           switch uploader.site
@@ -60,8 +64,8 @@ class MediaLib.AudioInserter extends MediaLib.BaseInserter
         file: @model.static_url
         height: 30
 
-# Стратегия вставки видео-модели через iframe
-class MediaLib.IFrameVideoInserter extends MediaLib.BaseInserter
+# Стратегия вставки видео-модели через iframe, передаём static_name
+class MediaLib.VideoInserter extends MediaLib.BaseInserter
   constructor: (@host, @uploader, @model) ->
   insert: ($uploader) ->
     throw "host isn't defined" unless @host
@@ -72,32 +76,23 @@ class MediaLib.IFrameVideoInserter extends MediaLib.BaseInserter
 
     $uploaderVideo = $uploader.find('.js-uploader-video')
     if $uploaderVideo.length
-      $player = $("<iframe src='http://#{@host}/embed/#{@model.hash}' class='uploader-embed' frameborder='0' allowfullscreen></iframe>")
+      $player = $("<iframe src='//#{@host}/embed/#{@model.hash}' frameborder='0' allowfullscreen class='medialib-video'>")
       $uploaderVideo.html $player
 
-# Стратегия вставки видео-модели
-class MediaLib.VideoInserter extends MediaLib.BaseInserter
+# Стратегия вставки видео-модели через iframe, передаём hash
+class MediaLib.IFrameVideoInserter extends MediaLib.BaseInserter
+  constructor: (@host, @uploader, @model) ->
   insert: ($uploader) ->
+    throw "host isn't defined" unless @host
+
     $uploader.find('.js-uploader-duration').val @model.duration
-    $uploader.find('.js-uploader-input').val @model.static_name
+    $uploader.find('.js-uploader-input').val @model.hash
     $uploader.find('.js-uploader-input').trigger 'change'
 
     $uploaderVideo = $uploader.find('.js-uploader-video')
     if $uploaderVideo.length
-      $player = $('<div>')
+      $player = $("<iframe src='//#{@host}/embed/#{@model.hash}' frameborder='0' allowfullscreen class='medialib-video'>")
       $uploaderVideo.html $player
-      $player.nmdVideoPlayerJw setup:
-        file: @model.static_url
-        image: @model.player_image
-        aspectratio: '16:9'
-        events:
-          onError: ->
-            if @model.player_video_fallback
-              $player.nmdVideoPlayerJw setup:
-                aspectratio: '16:9'
-                file: model.player_video_fallback
-                image: model.player_image
-                autostart: true
 
 # Стратегия вставки одного изображения
 class MediaLib.SingleImageInserter extends MediaLib.BaseInserter
@@ -221,7 +216,7 @@ class MediaLib.TinyMCE3Inserter extends MediaLib.BaseInserter
       when 'video'
         throw "host isn't defined" unless @host
 
-        template = _.template '<iframe src="http://<%= host %>/embed/<%= hash %>" class="uploader-embed" frameborder="0" allowfullscreen></iframe>'
+        template = _.template "<iframe src='//<%= host %>/embed/<%= hash %>' frameborder='0' allowfullscreen class='medialib-video'></iframe>"
         content = template
           host: @host
           hash: @model.hash
@@ -252,7 +247,7 @@ class MediaLib.RusnovostiTinyMCE3Inserter extends MediaLib.BaseInserter
       when 'video'
         throw "host isn't defined" unless @host
 
-        template = _.template '<iframe src="http://<%= host %>/embed/<%= hash %>"></iframe>'
+        template = _.template "<iframe src='//<%= host %>/embed/<%= hash %>' frameborder='0' allowfullscreen class='medialib-video'></iframe>"
         content = template
           host: @host
           hash: @model.hash
