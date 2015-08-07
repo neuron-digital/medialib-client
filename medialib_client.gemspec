@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.files         = `git ls-files`.split("\n")
   s.require_paths = ["lib"]
 
-  s.add_dependency('paperclip', '4.2.0')
+  s.add_dependency('paperclip', '4.3.0')
   s.add_dependency('rails', '>= 3.2')
   s.add_dependency('coffee-rails')
   s.add_dependency('jquery-rails')
