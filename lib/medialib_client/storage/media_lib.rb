@@ -9,6 +9,8 @@ module Paperclip
       end
 
       def flush_writes #:nodoc:
+        processors = @options[:processors]
+
         for style, file in @queued_for_write do
           log("saving #{path(style)}")
           begin
@@ -28,7 +30,19 @@ module Paperclip
             post_body << data
             post_body << "\r\n--#{boundary}--\r\n"
 
-            request = Net::HTTP::Post.new(uri.request_uri + "?sign=#{sign}&prefix=#{prefix}")
+            watermark = if processors.is_a?(Array) && processors.include?(:watermark)
+                          true
+                        else
+                          false
+                        end
+
+            skip_mp4 =  if processors.is_a?(Array) && processors.include?(:skip_mp4)
+                          true
+                        else
+                          false
+                        end
+
+            request = Net::HTTP::Post.new(uri.request_uri + "?sign=#{sign}&prefix=#{prefix}&watermark=#{watermark}&skip_mp4=#{skip_mp4}")
             request.body = post_body.join
             request["Content-Type"] = "multipart/form-data, boundary=#{boundary}"
 
