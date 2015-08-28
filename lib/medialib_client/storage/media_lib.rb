@@ -30,19 +30,12 @@ module Paperclip
             post_body << data
             post_body << "\r\n--#{boundary}--\r\n"
 
-            watermark = if processors.is_a?(Array) && processors.include?(:watermark)
-                          true
-                        else
-                          false
-                        end
+            if processors.is_a?(Array)
+              opt = processors.map{|p| "#{p}=true"}.join('&')
+              opt = '&' + opt if opt != ''
+            end
 
-            skip_mp4 =  if processors.is_a?(Array) && processors.include?(:skip_mp4)
-                          true
-                        else
-                          false
-                        end
-
-            request = Net::HTTP::Post.new(uri.request_uri + "?sign=#{sign}&prefix=#{prefix}&watermark=#{watermark}&skip_mp4=#{skip_mp4}")
+            request = Net::HTTP::Post.new(uri.request_uri + "?sign=#{sign}&prefix=#{prefix}#{opt}")
             request.body = post_body.join
             request["Content-Type"] = "multipart/form-data, boundary=#{boundary}"
 
@@ -77,30 +70,7 @@ module Paperclip
       private
 
         def delete path
-          if path.split('/').first == 'gallery_files'
-            true
-          elsif path.split('/').first == 'galleries'
-            sign = Digest::MD5.hexdigest(g_path + @options[:secret_key])
-            log("deleting #{path}")
-            uri = URI.parse(@options[:request_url] + '/' + path)
-            request = Net::HTTP::Delete.new(uri.request_uri + "?sign=#{sign}")
-
-            send_request(uri, request)
-
-            g_path = path.gsub('galleries', 'gallery_files')
-            log("deleting #{g_path}")
-            uri = URI.parse(@options[:request_url] + '/' + g_path)
-            request = Net::HTTP::Delete.new(uri.request_uri + "?sign=#{sign}")
-
-            send_request(uri, request)
-          else
-            sign = Digest::MD5.hexdigest(path + @options[:secret_key])
-            log("deleting #{path}")
-            uri = URI.parse(@options[:request_url] + '/' + path)
-            request = Net::HTTP::Delete.new(uri.request_uri + "?sign=#{sign}")
-
-            send_request(uri, request)
-          end
+          true
         end
 
         def send_request(uri, request)
