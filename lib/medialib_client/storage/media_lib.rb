@@ -10,6 +10,7 @@ module Paperclip
 
       def flush_writes #:nodoc:
         processors = @options[:processors]
+        result = true
 
         for style, file in @queued_for_write do
           log("saving #{path(style)}")
