@@ -36,9 +36,13 @@ module Paperclip
 
     # Всегда сохраняем старые файлы, убрали flush_deletes
     def save
-      flush_writes
-      @dirty = false
-      true
+      if flush_writes
+        @dirty = false
+        true
+      else
+        raise ActiveRecord::Rollback, 'Unprocessed file'
+        false
+      end
     end
   end
 end

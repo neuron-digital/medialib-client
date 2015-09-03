@@ -39,27 +39,17 @@ module Paperclip
             request.body = post_body.join
             request["Content-Type"] = "multipart/form-data, boundary=#{boundary}"
 
-            send_request(uri, request)
+            result = send_request(uri, request)
           rescue
             raise
           ensure
             file.rewind
           end
         end
+        result
       end
 
       def flush_deletes
-        if @options[:request_url]
-          begin
-            delete path
-          rescue
-            true
-          end
-
-          for path in @queued_for_delete do
-            delete path
-          end
-        end
         @queued_for_delete = []
       end
 
@@ -82,8 +72,9 @@ module Paperclip
             uri = URI.parse(response.to_hash['location'][0])
             http = Net::HTTP.new(uri.host, uri.port)
             http.use_ssl = true if uri.scheme == 'https'
-            http.request(request)
+            response = http.request(request)
           end
+          response.code.to_i == 200
         end
     end
   end
