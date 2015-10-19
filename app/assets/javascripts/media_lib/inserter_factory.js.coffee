@@ -35,8 +35,6 @@ class MediaLib.InserterFactory
             new MediaLib.RusnovostiTinyMCE3Inserter @settings.host, uploader, model
           else
             new MediaLib.TinyMCE3Inserter @settings.host, uploader, model
-      when 'tinymce4'
-        new MediaLib.TinyMCE4Inserter @settings.host, uploader, model
       when 'same_image'
         if model.type is 'image'
           new MediaLib.SameImageInserter uploader, model
@@ -203,7 +201,7 @@ class MediaLib.HeatGalleryImageInserter extends MediaLib.BaseInserter
 
 # Стратегия вставки различного контента в редактор TinyMCE 3
 class MediaLib.TinyMCE3Inserter extends MediaLib.BaseInserter
-  constructor: (@host, @uploader, @model) -> # to override
+  constructor: (@host, @uploader, @model) ->
   insert: ($uploader) ->
     switch @model.type
       when 'image'
@@ -211,34 +209,26 @@ class MediaLib.TinyMCE3Inserter extends MediaLib.BaseInserter
           src = @model.static_url.replace(/(\.\w{3,4})$/, "__#{@uploader.style}$1")
         else
           src = @model.static_url
-        template = _.template @getImageTemplate()
+        template = _.template '<img src="<%= src %>" alt="<%= description %>">'
         content = template
           src: src
           description: @model.description
       when 'video'
         throw "host isn't defined" unless @host
 
-        template = _.template @getVideoTemplate()
+        template = _.template "<iframe src='//<%= host %>/embed/<%= hash %>' frameborder='0' allowfullscreen class='medialib-video'></iframe>"
         content = template
           host: @host
           hash: @model.hash
       when 'audio'
-        template = _.template @getAudioTemplate()
+        template = _.template '
+          <audio class="audioPlayer" controls>
+            <source src="<%= src %>" type="audio/mpeg">
+          </audio>'
         content = template
           src: @model.player_audio
     ed = tinyMCE.get @model.uploaderId
     ed.execCommand 'mceInsertContent', false, content
-
-  getImageTemplate: -> '<img src="<%= src %>" alt="<%= description %>">'
-  getVideoTemplate: -> '<iframe src="//<%= host %>/embed/<%= hash %>" frameborder="0" allowfullscreen class="medialib-video"></iframe>'
-  getAudioTemplate: ->
-    '<audio class="audioPlayer" controls>
-       <source src="<%= src %>" type="audio/mpeg">
-     </audio>'
-
-# Стратегия вставки различного контента в редактор TinyMCE 4
-class MediaLib.TinyMCE4Inserter extends MediaLib.TinyMCE3Inserter
-  getImageTemplate: -> '<p><img src="<%= src %>" alt="<%= description %>"></p>'
 
 # Стратегия вставки различного контента в редактор TinyMCE 3
 class MediaLib.RusnovostiTinyMCE3Inserter extends MediaLib.BaseInserter

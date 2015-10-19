@@ -20,5 +20,4 @@ $('.js-uploader').nmdUploader
   tenant: %tenant%
 ```
 
-## Changelog
-1.7.0 - Добавлена InserterFactory для TinyMCE 4
+## Examples
