@@ -17,6 +17,8 @@ module Paperclip
           begin
             uri = URI.parse(@options[:request_url])
 
+            md5 = Digest::MD5.file(file.path)
+
             boundary = "AaB03x"
 
             data = File.read(file.path)
@@ -36,7 +38,7 @@ module Paperclip
               opt = '&' + opt if opt != ''
             end
 
-            request = Net::HTTP::Post.new(uri.request_uri + "?sign=#{sign}&prefix=#{prefix}#{opt}")
+            request = Net::HTTP::Post.new(uri.request_uri + "?sign=#{sign}&prefix=#{prefix}&md5=#{md5}#{opt}")
             request.body = post_body.join
             request["Content-Type"] = "multipart/form-data, boundary=#{boundary}"
 
