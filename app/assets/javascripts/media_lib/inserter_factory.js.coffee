@@ -43,6 +43,9 @@ class MediaLib.InserterFactory
       when 'gallery_image'
         if model.type is 'image'
           new MediaLib.HeatGalleryImageInserter uploader, model
+      when 'flash'
+        if model.type is 'application'
+          new MediaLib.FlashInserter uploader, model
       else
         throw new Error('Undefined Inserter')
 
@@ -295,3 +298,10 @@ class MediaLib.RusnovostiTinyMCE3Inserter extends MediaLib.BaseInserter
           description: @model.description
     ed = tinyMCE.get @model.uploaderId
     ed.execCommand 'mceInsertContent', false, content
+
+class MediaLib.FlashInserter extends MediaLib.BaseInserter
+  insert: ($uploader) ->
+    $uploader.find('.js-uploader-img [name="movie"]').attr 'value', @model.static_url
+
+    $uploader.find('.js-uploader-input').val @model.static_name
+    $uploader.find('.js-uploader-input').trigger 'change'
