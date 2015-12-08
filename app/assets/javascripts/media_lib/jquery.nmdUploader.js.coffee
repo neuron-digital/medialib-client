@@ -10,7 +10,7 @@ $(window).on "message", (e) ->
       when 'select'
         $uploader = $("##{data.model.uploaderId}")
         uploader = $uploader.data()
-        
+
         $uploader.nmdUploader 'select',
           model: data.model
           uploader: uploader
@@ -27,8 +27,8 @@ $ ->
         openSelector: '.js-uploader-open'
       , options
 
-      throw "host isn't defined" unless settings.host
-      throw "tenant isn't defined" unless settings.tenant
+      throw new Error("host isn't defined") unless settings.host
+      throw new Error("tenant isn't defined") unless settings.tenant
 
       @each ->
         $uploader = $ @
@@ -39,7 +39,7 @@ $ ->
         getUrl = ->
           # "Живой" префикс
           prefix = settings.prefix ? $uploader.data('prefix')
-          throw "prefix isn't defined" unless prefix
+          throw new Error("prefix isn't defined") unless prefix
 
           multiselect = settings.multiselect ? $uploader.data('multiselect')
           type = settings.type ? $uploader.data('type')
@@ -99,4 +99,4 @@ $ ->
   $.fn.nmdUploader = (method) ->
     if methods[method] then methods[method].apply @, Array::slice.call(arguments, 1)
     else if typeof method is "object" or not method then methods.init.apply @, arguments
-    else throw "Метод с именем #{method} не существует для jQuery.nmdUploader"
+    else throw new Error("Метод с именем #{method} не существует для jQuery.nmdUploader")

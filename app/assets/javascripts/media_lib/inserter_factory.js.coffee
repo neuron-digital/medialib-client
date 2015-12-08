@@ -44,13 +44,13 @@ class MediaLib.InserterFactory
         if model.type is 'image'
           new MediaLib.HeatGalleryImageInserter uploader, model
       else
-        throw "Undefined Inserter"
+        throw new Error('Undefined Inserter')
 
 # Базовый абстрактный класс стратегии
 class MediaLib.BaseInserter
   constructor: (@uploader, @model) ->
   insert: ->
-    throw "NotImplementedException"
+    throw new Error("NotImplementedException")
 
 # Стратегия вставки аудио-модели
 class MediaLib.AudioInserter extends MediaLib.BaseInserter
@@ -70,7 +70,7 @@ class MediaLib.AudioInserter extends MediaLib.BaseInserter
 class MediaLib.VideoInserter extends MediaLib.BaseInserter
   constructor: (@host, @uploader, @model) ->
   insert: ($uploader) ->
-    throw "host isn't defined" unless @host
+    throw new Error("host isn't defined") unless @host
 
     $uploader.find('.js-uploader-duration').val @model.duration
     $uploader.find('.js-uploader-input').val @model.static_name
@@ -85,7 +85,7 @@ class MediaLib.VideoInserter extends MediaLib.BaseInserter
 class MediaLib.IFrameVideoInserter extends MediaLib.BaseInserter
   constructor: (@host, @uploader, @model) ->
   insert: ($uploader) ->
-    throw "host isn't defined" unless @host
+    throw new Error("host isn't defined") unless @host
 
     $uploader.find('.js-uploader-duration').val @model.duration
     $uploader.find('.js-uploader-input').val @model.hash
@@ -216,7 +216,7 @@ class MediaLib.TinyMCE3Inserter extends MediaLib.BaseInserter
           src: src
           description: @model.description
       when 'video'
-        throw "host isn't defined" unless @host
+        new Error("host isn't defined") unless @host
 
         template = _.template "<iframe src='//<%= host %>/embed/<%= hash %>' frameborder='0' allowfullscreen class='medialib-video'></iframe>"
         content = template
@@ -247,7 +247,7 @@ class MediaLib.TinyMCE4Inserter extends MediaLib.TinyMCE3Inserter
           src: src
           description: @model.description
       when 'video'
-        throw "host isn't defined" unless @host
+        new Error("host isn't defined") unless @host
 
         template = _.template @getVideoTemplate()
         content = template
@@ -282,7 +282,7 @@ class MediaLib.RusnovostiTinyMCE3Inserter extends MediaLib.BaseInserter
           src: src
           description: @model.description
       when 'video'
-        throw "host isn't defined" unless @host
+        new Error("host isn't defined") unless @host
 
         template = _.template "<iframe src='//<%= host %>/embed/<%= hash %>' frameborder='0' allowfullscreen class='medialib-video'></iframe>"
         content = template
