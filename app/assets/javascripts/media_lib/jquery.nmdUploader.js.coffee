@@ -37,7 +37,6 @@ $ ->
         uploaderId = $uploader.attr('id')
 
         getUrl = ->
-          # "Живой" префикс
           prefix = settings.prefix ? $uploader.data('prefix')
           throw new Error("prefix isn't defined") unless prefix
 
@@ -85,7 +84,7 @@ $ ->
         if settings.open ? $uploader.data('open')
           openUploader()
         else
-          $uploader.find(settings.openSelector).on 'click', (e) ->
+          $uploader.find(settings.openSelector).on 'click.uploader', (e) ->
             e.preventDefault()
             e.stopPropagation()
             openUploader()
@@ -95,6 +94,22 @@ $ ->
       factory = new MediaLib.InserterFactory settings
       inserter = factory.createInserter()
       @each -> inserter.insert $(@) if inserter?
+
+    destroy: (options) ->
+      settings = $.extend true,
+        iframeSelector: '.js-uploader-iframe'
+        openSelector: '.js-uploader-open'
+      , options
+
+      $uploader.find(settings.openSelector).off '.uploader'
+
+      modalId = settings.modalId ? $uploader.data('modalId')
+      if modalId
+        $uploaderIframe = $("##{modalId}").find(settings.iframeSelector)
+      else
+        $uploaderIframe = $uploader.find(settings.iframeSelector)
+
+      $uploaderIframe.empty()
 
   $.fn.nmdUploader = (method) ->
     if methods[method] then methods[method].apply @, Array::slice.call(arguments, 1)
