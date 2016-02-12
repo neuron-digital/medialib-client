@@ -6,48 +6,53 @@ class MediaLib.InserterFactory
   createInserter: ->
     uploader = @settings.uploader
     model = @settings.model
-    switch uploader.type
-      when 'audio'
-        if model.type is 'audio'
-          new MediaLib.AudioInserter uploader, model
-      when 'image'
-        if model.type is 'image'
-          new MediaLib.SingleImageInserter uploader, model
-      when 'video'
-        if model.type is 'video'
+    if uploader.externalInserter
+      inserterClass = MediaLib[uploader.externalInserter]
+      throw new Error("Inserter #{uploader.externalInserter} was not found in namespace MediaLib.") unless inserterClass
+      new inserterClass @settings
+    else
+      switch uploader.type
+        when 'audio'
+          if model.type is 'audio'
+            new MediaLib.AudioInserter uploader, model
+        when 'image'
+          if model.type is 'image'
+            new MediaLib.SingleImageInserter uploader, model
+        when 'video'
+          if model.type is 'video'
+            switch uploader.site
+              when 'lifenews.ru'
+                new MediaLib.IFrameVideoInserter @settings.host, uploader, model
+              else
+                new MediaLib.VideoInserter @settings.host, uploader, model
+        when 'multi_image'
+          if model.type is 'image'
+            switch uploader.site
+              when 'heat.ru'
+                new MediaLib.HeatMultiImageInserter uploader, model
+              when 'lifenews.ru'
+                new MediaLib.LifenewsMultiImageInserter uploader, model
+              when 'izvestia.ru'
+                new MediaLib.IzvestiaMultiImageInserter uploader, model
+        when 'tinymce'
           switch uploader.site
-            when 'lifenews.ru'
-              new MediaLib.IFrameVideoInserter @settings.host, uploader, model
+            when 'rusnovosti.ru'
+              new MediaLib.RusnovostiTinyMCE3Inserter @settings.host, uploader, model
             else
-              new MediaLib.VideoInserter @settings.host, uploader, model
-      when 'multi_image'
-        if model.type is 'image'
-          switch uploader.site
-            when 'heat.ru'
-              new MediaLib.HeatMultiImageInserter uploader, model
-            when 'lifenews.ru'
-              new MediaLib.LifenewsMultiImageInserter uploader, model
-            when 'izvestia.ru'
-              new MediaLib.IzvestiaMultiImageInserter uploader, model
-      when 'tinymce'
-        switch uploader.site
-          when 'rusnovosti.ru'
-            new MediaLib.RusnovostiTinyMCE3Inserter @settings.host, uploader, model
-          else
-            new MediaLib.TinyMCE3Inserter @settings.host, uploader, model
-      when 'tinymce4'
-        new MediaLib.TinyMCE4Inserter @settings.host, uploader, model
-      when 'same_image'
-        if model.type is 'image'
-          new MediaLib.SameImageInserter uploader, model
-      when 'gallery_image'
-        if model.type is 'image'
-          new MediaLib.HeatGalleryImageInserter uploader, model
-      when 'flash'
-        if model.type is 'application'
-          new MediaLib.FlashInserter uploader, model
-      else
-        throw new Error('Undefined Inserter')
+              new MediaLib.TinyMCE3Inserter @settings.host, uploader, model
+        when 'tinymce4'
+          new MediaLib.TinyMCE4Inserter @settings.host, uploader, model
+        when 'same_image'
+          if model.type is 'image'
+            new MediaLib.SameImageInserter uploader, model
+        when 'gallery_image'
+          if model.type is 'image'
+            new MediaLib.HeatGalleryImageInserter uploader, model
+        when 'flash'
+          if model.type is 'application'
+            new MediaLib.FlashInserter uploader, model
+        else
+          throw new Error('Undefined Inserter')
 
 # Базовый абстрактный класс стратегии
 class MediaLib.BaseInserter

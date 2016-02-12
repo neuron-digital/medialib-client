@@ -20,4 +20,19 @@ $('.js-uploader').nmdUploader
   tenant: %tenant%
 ```
 
-## Examples
+## Использование внешних инсертеров
+
+`data-external-inserter="LifeTinyMceInserter"`
+
+**example:**
+
+html
+```
+<div
+      id="js-post-content"
+      class="tiny-editor-area"
+      data-prefix="{{path_prefix}}"
+      data-type="image"
+      data-external-inserter="LifeTinyMceInserter"
+      data-style="690x420"></div>
+```
