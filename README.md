@@ -26,8 +26,9 @@ $('.js-uploader').nmdUploader
 
 **example:**
 
-html
-```
+
+```html
+
 <div
       id="js-post-content"
       class="tiny-editor-area"
@@ -35,4 +36,5 @@ html
       data-type="image"
       data-external-inserter="LifeTinyMceInserter"
       data-style="690x420"></div>
+      
 ```
