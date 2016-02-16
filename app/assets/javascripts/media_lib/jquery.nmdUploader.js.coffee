@@ -10,12 +10,14 @@ $(window).on "message", (e) ->
       when 'select'
         $uploader = $("##{data.model.uploaderId}")
         uploader = $uploader.data()
-        results =
-          $uploader.nmdUploader 'select',
-            model: data.model
-            uploader: uploader
-            host: data.host
-        unless _(results).any?((result) -> result is MediaLib.INSERT_RESULT_PREVENT_CLOSE)
+
+        results = $uploader.nmdUploader 'select',
+          model: data.model
+          uploader: uploader
+          host: data.host
+
+        isClose = not _.contains results, MediaLib.INSERT_RESULT_PREVENT_CLOSE
+        if isClose
           # Закрытие модального окна при интеграции с модалками
           $('div[id^="nmdUploaderModal"]').modal('hide') if $.fn.modal? and not uploader.multiselect
 
@@ -32,6 +34,9 @@ $ ->
 
       @each ->
         $uploader = $ @
+
+        # сохраняем кастомные параметры
+        $uploader.data 'params', settings.params if settings.params?
 
         $uploader.attr('id', $.md5(Math.random())[0..3]) unless $uploader.attr('id')
         uploaderId = $uploader.attr('id')
@@ -90,12 +95,21 @@ $ ->
             openUploader()
 
     select: (options) ->
-      settings = _(options).clone()
-      factory = new MediaLib.InserterFactory(settings)
-      if (inserter = factory.createInserter())?
-        _(@).map (el) => inserter.insert($ el)
-      else
-        []
+      settings = $.extend true, {}, options
+
+      results = []
+      @each ->
+        $uploader = $ @
+
+        # загружаем кастомные параметры
+        settings.params = $uploader.data 'params'
+
+        factory = new MediaLib.InserterFactory(settings)
+        inserter = factory.createInserter()
+
+        results.push inserter.insert($uploader)
+
+      results
 
     destroy: (options) ->
       settings = $.extend true,
