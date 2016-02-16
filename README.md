@@ -38,3 +38,7 @@ $('.js-uploader').nmdUploader
       data-style="690x420"></div>
       
 ```
+
+**Inserter может вернуть результат из метода insert**
+
+- MediaLib.INSERT_RESULT_PREVENT_CLOSE - не закрывать модальное окно

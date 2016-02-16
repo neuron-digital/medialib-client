@@ -1,4 +1,5 @@
 window.MediaLib ||= {}
+window.MediaLib.INSERT_RESULT_PREVENT_CLOSE = 'prevent_modal_close'
 
 # Абстрактная фабрика для создания стратегий вставки
 class MediaLib.InserterFactory

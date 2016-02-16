@@ -10,14 +10,14 @@ $(window).on "message", (e) ->
       when 'select'
         $uploader = $("##{data.model.uploaderId}")
         uploader = $uploader.data()
-
-        $uploader.nmdUploader 'select',
-          model: data.model
-          uploader: uploader
-          host: data.host
-
-        # Закрытие модального окна при интеграции с модалками
-        $('div[id^="nmdUploaderModal"]').modal('hide') if $.fn.modal? and not uploader.multiselect
+        results =
+          $uploader.nmdUploader 'select',
+            model: data.model
+            uploader: uploader
+            host: data.host
+        unless _(results).any?((result) -> result is MediaLib.INSERT_RESULT_PREVENT_CLOSE)
+          # Закрытие модального окна при интеграции с модалками
+          $('div[id^="nmdUploaderModal"]').modal('hide') if $.fn.modal? and not uploader.multiselect
 
 $ ->
   methods =
@@ -90,10 +90,12 @@ $ ->
             openUploader()
 
     select: (options) ->
-      settings = _.extend {}, options
-      factory = new MediaLib.InserterFactory settings
-      inserter = factory.createInserter()
-      @each -> inserter.insert $(@) if inserter?
+      settings = _(options).clone()
+      factory = new MediaLib.InserterFactory(settings)
+      if (inserter = factory.createInserter())?
+        _(@).map (el) => inserter.insert($ el)
+      else
+        []
 
     destroy: (options) ->
       settings = $.extend true,
