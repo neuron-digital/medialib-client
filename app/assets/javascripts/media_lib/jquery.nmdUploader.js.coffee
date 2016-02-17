@@ -27,6 +27,7 @@ $ ->
       settings = $.extend true,
         iframeSelector: '.js-uploader-iframe'
         openSelector: '.js-uploader-open'
+        params: {}
       , options
 
       throw new Error("host isn't defined") unless settings.host
@@ -36,7 +37,7 @@ $ ->
         $uploader = $ @
 
         # сохраняем кастомные параметры
-        $uploader.data 'params', settings.params if settings.params?
+        $uploader.data 'params', settings.params
 
         $uploader.attr('id', $.md5(Math.random())[0..3]) unless $uploader.attr('id')
         uploaderId = $uploader.attr('id')
