@@ -42,3 +42,15 @@ $('.js-uploader').nmdUploader
 **Inserter может вернуть результат из метода insert**
 
 - MediaLib.INSERT_RESULT_PREVENT_CLOSE - не закрывать модальное окно
+
+**Проброс data параметров**
+
+Параметры будут доступны в Inserter'е при вставке в `@options.params`
+
+```coffeescript
+
+$("#" + editor.id).nmdUploader
+    ...
+    params:   {'side-image': true, blablabla: '123'}
+              
+```              
